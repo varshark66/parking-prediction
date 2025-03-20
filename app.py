@@ -1,35 +1,30 @@
-import os
-from flask import Flask, render_template, request
-import joblib
-import numpy as np
+from flask import Flask, render_template, request, jsonify
+import random
 
 app = Flask(__name__)
 
-# Load the trained model
-model = joblib.load("parking_model.pkl")
+# 📍 Parking Locations Data (Example Coordinates)
+parking_locations = [
+    {"name": "Mall Parking", "lat": 12.9716, "lng": 77.5946},  
+    {"name": "Railway Station Parking", "lat": 12.9767, "lng": 77.5800},
+    {"name": "Hospital Parking", "lat": 12.9507, "lng": 77.5848}
+]
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return render_template("index.html", locations=parking_locations)
 
+# 🚗 Parking Availability Prediction (Dummy Logic)
 @app.route("/predict", methods=["POST"])
 def predict():
-    try:
-        time_hour = int(request.form["time"])  
-        day_of_week = int(request.form["day_of_week"])
-        weather = int(request.form["weather"])
+    time = int(request.form.get("time"))
+    day_of_week = int(request.form.get("day_of_week"))
+    weather = int(request.form.get("weather"))
 
-        # Prepare input data for prediction
-        input_data = np.array([[time_hour, day_of_week, weather]])
+    # 🎯 Simple Random Prediction Logic (Replace with AI Model Later)
+    prediction = random.choice(["Available", "Full", "Limited"])
 
-        # Make prediction
-        prediction = model.predict(input_data)
-        result = "Available" if prediction[0] == 1 else "Not Available"
-
-        return render_template("index.html", prediction=result)
-    except:
-        return render_template("index.html", prediction="Error in Prediction")
+    return render_template("index.html", prediction=prediction, locations=parking_locations)
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))  # Get port from Render
-    app.run(host="0.0.0.0", port=port)  # Bind to the correct port
+    app.run(debug=True)
