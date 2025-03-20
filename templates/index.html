@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Parking Prediction 🚗</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 </head>
 <body>
+
+    <!-- Map Container -->
+    <div id="map" style="height: 500px; width: 100%;"></div>
+
     <div class="container">
         <h1>🚗 Smart Parking Availability Predictor</h1>
         <form method="POST" action="/predict">
@@ -16,15 +21,35 @@
             <label for="day_of_week">📅 Day of the Week (0=Monday, 6=Sunday):</label>
             <input type="number" id="day_of_week" name="day_of_week" required>
 
-            <label for="weather">🌦️ Weather Condition (0=Clear, 1=Rainy, etc.):</label>
+            <label for="weather">🌤️ Weather Condition (0=Clear, 1=Rainy, etc.):</label>
             <input type="number" id="weather" name="weather" required>
 
             <button type="submit">🚀 Predict Availability</button>
         </form>
 
         {% if prediction %}
-            <h2>📢 Result: {{ prediction }}</h2>
+            <h2>📊 Result: {{ prediction }}</h2>
         {% endif %}
     </div>
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <!-- JavaScript to Load the Map -->
+    <script>
+        // Initialize the map
+        var map = L.map('map').setView([12.9716, 77.5946], 13); // Bangalore, India
+
+        // Load OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Add a marker
+        var marker = L.marker([12.9716, 77.5946]).addTo(map)
+            .bindPopup("This is Bangalore!")
+            .openPopup();
+    </script>
+
 </body>
 </html>
